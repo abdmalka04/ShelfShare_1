@@ -1,14 +1,14 @@
 html, body {
     margin: 0;
     padding: 0;
-    background: #ffffff;
     font-family: Arial, sans-serif;
+    background: #ffffff;
 }
 
 .top-bar {
     width: 100%;
     background: #020080;
-    padding: 12px 16px;
+    padding: 12px;
     display: flex;
     align-items: center;
     gap: 12px;
@@ -16,16 +16,30 @@ html, body {
 }
 
 .logo {
-    margin: 0;
-    font-size: 22px;
     color: white;
+    font-size: 22px;
+    text-decoration: none;
+    font-weight: bold;
 }
 
 .search {
     flex: 1;
-    padding: 10px 14px;
+    padding: 10px;
     border-radius: 20px;
     border: none;
+}
+
+.profile-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+}
+
+.library-menu {
+    position: relative;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
 }
 
 .menu-text {
@@ -36,12 +50,56 @@ html, body {
 .menu-arrow {
     width: 12px;
     height: 12px;
+    margin-left: 4px;
 }
 
-.profile-icon {
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
+.dropdown {
+    position: absolute;
+    top: 36px;
+    left: 0;
+    background: white;
+    color: #020080;
+    border-radius: 8px;
+    box-shadow: 0px 4px 10px rgba(0,0,0,0.15);
+    display: none;
+    min-width: 140px;
+    z-index: 10;
+}
+
+.library-menu:hover .dropdown {
+    display: block;
+}
+
+.dropdown-item {
+    padding: 10px;
+    position: relative;
+}
+
+.dropdown-item:hover {
+    background: #f2f2f2;
+}
+
+.sub-dropdown {
+    position: absolute;
+    top: 0;
+    right: 140px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0px 4px 10px rgba(0,0,0,0.15);
+    display: none;
+    min-width: 120px;
+}
+
+.dropdown-item:hover .sub-dropdown {
+    display: block;
+}
+
+.sub-dropdown div {
+    padding: 10px;
+}
+
+.sub-dropdown div:hover {
+    background: #f2f2f2;
 }
 
 .layout {
@@ -61,6 +119,8 @@ html, body {
     margin-bottom: 8px;
     border-radius: 6px;
     cursor: pointer;
+    color: white;
+    text-decoration: none;
 }
 
 .left-item:hover {
@@ -97,7 +157,6 @@ html, body {
 .book-price {
     margin: 0 0 12px;
     color: #555;
-    font-size: 15px;
 }
 
 .book-btn {
@@ -112,4 +171,104 @@ html, body {
 
 .book-btn:hover {
     background: #010060;
+}
+
+@media (max-width: 768px) {
+
+    .top-bar {
+        flex-wrap: wrap;
+    }
+
+    .search {
+        width: 100%;
+        order: 3;
+    }
+
+    .layout {
+        flex-direction: column;
+    }
+
+    .left-bar {
+        width: 100%;
+        height: auto;
+        display: flex;
+        justify-content: space-around;
+    }
+
+    .left-item {
+        margin-bottom: 0;
+    }
+
+    .content {
+        padding: 20px;
+        display: flex;
+        justify-content: center;
+    }
+
+    .book-card-single {
+        width: 90%;
+    }
+
+}
+button,
+.left-item,
+.book-btn,
+.view-btn {
+    transition: background-color 0.25s ease,
+                box-shadow 0.15s ease,
+                transform 0.1s ease;
+}
+
+button:hover,
+.book-btn:hover,
+.view-btn:hover {
+    background-color: #010060;
+}
+
+button:active,
+.book-btn:active,
+.view-btn:active {
+    box-shadow: inset 0 0 6px rgba(0,0,0,0.4);
+    transform: scale(0.97);
+}
+
+.left-item:hover {
+    background-color: #010060;
+}
+
+.left-item:active {
+    box-shadow: inset 0 0 5px rgba(0,0,0,0.4);
+}
+
+.profile-icon {
+    transition: transform 0.2s ease;
+}
+
+.profile-icon:hover {
+    transform: scale(1.1);
+}
+
+.logo {
+    transition: opacity 0.2s ease;
+}
+
+.logo:hover {
+    opacity: 0.8;
+}
+
+.library-menu {
+    transition: opacity 0.2s ease;
+}
+
+.library-menu:hover {
+    opacity: 0.9;
+}
+
+.book-card-single {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.book-card-single:hover {
+    transform: translateY(-4px);
+    box-shadow: 0px 6px 14px rgba(0,0,0,0.2);
 }
