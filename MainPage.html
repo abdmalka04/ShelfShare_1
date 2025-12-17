@@ -3,42 +3,63 @@
 <head>
     <title>ShelfShare - Home</title>
     <link rel="stylesheet" href="MainPage.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
 
 <div class="top-bar">
-    <h2 class="logo">ShelfShare</h2>
+    <a href="MainPage.html" class="logo">ShelfShare</a>
 
     <input type="text" class="search" placeholder="Search books...">
 
-    <div class="top-right-menu">
+    <div class="library-menu">
         <span class="menu-text">Library</span>
         <img src="arrow.png" class="menu-arrow">
+
+        <div class="dropdown">
+            <div class="dropdown-item">
+                IT
+                <div class="sub-dropdown">
+                    <div>CS</div>
+                    <div>CIS</div>
+                    <div>CYS</div>
+                    <div>DA</div>
+                    <div>DRG</div>
+                    <div>BIT</div>
+                </div>
+            </div>
+
+            <div class="dropdown-item">
+                Science
+                <div class="sub-dropdown">
+                    <div>Math</div>
+                    <div>Physics</div>
+                    <div>Stat</div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <img src="profile.png" class="profile-icon">
+    <a href="Profile.html">
+        <img src="profile.png" class="profile-icon">
+    </a>
 </div>
 
 <div class="layout">
 
     <div class="left-bar">
-        <div class="left-item">Home</div>
         <div class="left-item">Wish List</div>
-        <div class="left-item">My Posts</div>
+        <a href="Post.html" class="left-item">Post</a>
         <div class="left-item">Settings</div>
     </div>
 
     <div class="content">
-
         <div class="book-card-single">
             <img src="book1.jpg">
-
             <h3 class="book-title">Linear Algebra</h3>
             <p class="book-price">2 JOD</p>
-
             <button class="book-btn">View Book</button>
         </div>
-
     </div>
 
 </div>
