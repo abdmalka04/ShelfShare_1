@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ShelfShare - Post</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="PostPage.css">
+</head>
+<body>
+
+<div class="top-bar">
+    <a href="MainPage.html" class="logo">ShelfShare</a>
+    <input type="text" class="search" placeholder="Search books...">
+    <div class="library-menu" id="libraryMenu">
+        <span class="menu-text">Library</span>
+        <img src="arrow.png" class="menu-arrow">
+    </div>
+    <a href="Profile.html">
+        <img src="profile.png" class="profile-icon">
+    </a>
+</div>
+
+<div class="layout">
+    <div class="left-bar">
+        <div class="left-item">Wish List</div>
+        <a href="PostPage.html" class="left-item">Post</a>
+        <div class="left-item">Settings</div>
+    </div>
+
+    <div class="content">
+        <div class="page">
+            <h2>Post a Book</h2>
+            <form class="post-form">
+                <label>Book Title</label>
+                <div class="title-row">
+                    <input type="text" placeholder="ex. Data Base 1">
+                    <input type="text" class="shortcut" placeholder="ex. CIS 260">
+                </div>
+                <label>Price (JOD)</label>
+                <input type="number" placeholder="ex. 2">
+                <label>Contact Method</label>
+                <div class="contact-box">
+                    <div class="contact-option active" id="wa">
+                        <img src="whatsapp.png">
+                    </div>
+                    <div class="contact-option" id="mail">
+                        <img src="email.png">
+                    </div>
+                </div>
+                <input type="text" id="contactInput" placeholder="Enter your phone number">
+                <button type="submit" class="post-btn">Post Book</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+const libraryMenu = document.getElementById("libraryMenu");
+const dropdownMenu = document.getElementById("dropdownMenu");
+
+libraryMenu.addEventListener("click", function (e) {
+    e.stopPropagation();
+    dropdownMenu?.classList.toggle("show");
+});
+
+document.addEventListener("click", function () {
+    dropdownMenu?.classList.remove("show");
+});
+
+const wa = document.getElementById("wa");
+const mail = document.getElementById("mail");
+const input = document.getElementById("contactInput");
+
+wa.onclick = function () {
+    wa.classList.add("active");
+    mail.classList.remove("active");
+    input.placeholder = "Enter your phone number";
+};
+
+mail.onclick = function () {
+    mail.classList.add("active");
+    wa.classList.remove("active");
+    input.placeholder = "Enter your email";
+};
+</script>
+
+</body>
+</html>
