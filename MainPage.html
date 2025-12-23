@@ -2,54 +2,48 @@
 <html>
 <head>
     <title>ShelfShare - Home</title>
-    <link rel="stylesheet" href="MainPage.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="MainPage.css">
 </head>
 <body>
 
 <div class="top-bar">
     <a href="MainPage.html" class="logo">ShelfShare</a>
-
     <input type="text" class="search" placeholder="Search books...">
-
-    <div class="library-menu">
+    <div class="library-menu" id="libraryMenu">
         <span class="menu-text">Library</span>
         <img src="arrow.png" class="menu-arrow">
-
-        <div class="dropdown">
+        <div class="dropdown" id="dropdownMenu">
             <div class="dropdown-item">
                 IT
                 <div class="sub-dropdown">
-                    <div>CS</div>
-                    <div>CIS</div>
-                    <div>CYS</div>
-                    <div>DA</div>
-                    <div>DRG</div>
-                    <div>BIT</div>
+                    <a class="sub-item">CS</a>
+                    <a class="sub-item">CIS</a>
+                    <a class="sub-item">CYS</a>
+                    <a class="sub-item">DA</a>
+                    <a class="sub-item">DRG</a>
+                    <a class="sub-item">BIT</a>
                 </div>
             </div>
-
             <div class="dropdown-item">
                 Science
                 <div class="sub-dropdown">
-                    <div>Math</div>
-                    <div>Physics</div>
-                    <div>Stat</div>
+                    <a class="sub-item">Math</a>
+                    <a class="sub-item">Physics</a>
+                    <a class="sub-item">Stat</a>
                 </div>
             </div>
         </div>
     </div>
-
     <a href="Profile.html">
         <img src="profile.png" class="profile-icon">
     </a>
 </div>
 
 <div class="layout">
-
     <div class="left-bar">
         <div class="left-item">Wish List</div>
-        <a href="Post.html" class="left-item">Post</a>
+        <a href="PostPage.html" class="left-item">Post</a>
         <div class="left-item">Settings</div>
     </div>
 
@@ -60,9 +54,46 @@
             <p class="book-price">2 JOD</p>
             <button class="book-btn">View Book</button>
         </div>
+        <div class="book-card-single">
+            <img src="book2.jpg">
+            <h3 class="book-title">Database Systems</h3>
+            <p class="book-price">3 JOD</p>
+            <button class="book-btn">View Book</button>
+        </div>
+        <div class="book-card-single">
+            <img src="book3.jpg">
+            <h3 class="book-title">Physics 101</h3>
+            <p class="book-price">1.5 JOD</p>
+            <button class="book-btn">View Book</button>
+        </div>
+        <div class="book-card-single">
+            <img src="book4.jpg">
+            <h3 class="book-title">Statistics</h3>
+            <p class="book-price">2.5 JOD</p>
+            <button class="book-btn">View Book</button>
+        </div>
+        <div class="book-card-single">
+            <img src="book5.jpg">
+            <h3 class="book-title">CIS 260</h3>
+            <p class="book-price">3 JOD</p>
+            <button class="book-btn">View Book</button>
+        </div>
     </div>
-
 </div>
+
+<script>
+const libraryMenu = document.getElementById("libraryMenu");
+const dropdownMenu = document.getElementById("dropdownMenu");
+
+libraryMenu.addEventListener("click", function (e) {
+    e.stopPropagation();
+    dropdownMenu.classList.toggle("show");
+});
+
+document.addEventListener("click", function () {
+    dropdownMenu.classList.remove("show");
+});
+</script>
 
 </body>
 </html>
