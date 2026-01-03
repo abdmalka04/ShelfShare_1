@@ -1,86 +1,144 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>ShelfShare - Post</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="PostPage.css">
+<meta charset="UTF-8">
+<title>ShelfShare - Post</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="PostPage.css">
 </head>
 <body>
 
-<div class="top-bar">
+<header class="top-bar">
     <a href="MainPage.html" class="logo">ShelfShare</a>
-    <input type="text" class="search" placeholder="Search books...">
-    <div class="library-menu" id="libraryMenu">
-        <span class="menu-text">Library</span>
-        <img src="arrow.png" class="menu-arrow">
+    <div class="search-box">
+        <input type="text" class="search" placeholder="Search books...">
     </div>
-    <a href="Profile.html">
-        <img src="profile.png" class="profile-icon">
-    </a>
-</div>
+    <a href="Profile.html"><img src="profile.png" class="profile-icon"></a>
+</header>
 
 <div class="layout">
-    <div class="left-bar">
-        <div class="left-item">Wish List</div>
-        <a href="PostPage.html" class="left-item">Post</a>
-        <div class="left-item">Settings</div>
+
+    <div class="side-menu">
+        <a href="WishList.html" class="item">Wish List</a>
+        <a href="PostPage.html" class="item active">Post</a>
+        <a class="item">Settings</a>
     </div>
 
-    <div class="content">
-        <div class="page">
-            <h2>Post a Book</h2>
-            <form class="post-form">
-                <label>Book Title</label>
-                <div class="title-row">
-                    <input type="text" placeholder="ex. Data Base 1">
-                    <input type="text" class="shortcut" placeholder="ex. CIS 260">
+    <main class="content">
+        <div class="card">
+            <h2>Post an Item</h2>
+            <form id="postForm">
+
+                <label>Item Title</label>
+                <div class="row">
+                    <input type="text" id="title" placeholder="ex. Database" required>
+                    <input type="text" id="shortcut" placeholder="ex. CIS 260" required>
                 </div>
+
                 <label>Price (JOD)</label>
-                <input type="number" placeholder="ex. 2">
+                <input type="text" id="price" placeholder='ex. 2 or type "Free"' required>
+
                 <label>Contact Method</label>
                 <div class="contact-box">
-                    <div class="contact-option active" id="wa">
+                    <div id="wa" class="contact-option active">
                         <img src="whatsapp.png">
                     </div>
-                    <div class="contact-option" id="mail">
+                    <div id="mail" class="contact-option">
                         <img src="email.png">
                     </div>
                 </div>
-                <input type="text" id="contactInput" placeholder="Enter your phone number">
-                <button type="submit" class="post-btn">Post Book</button>
+                <input type="text" id="contactInput" placeholder="Enter your phone number" required>
+
+                <label>Item Type & Description</label>
+                <div class="item-row">
+                    <div class="item-dropdown" id="itemDropdown">
+                        <button type="button" id="selectedItemBtn">Book ▾</button>
+                        <div class="dropdown-options">
+                            <div class="option">Book</div>
+                            <div class="option">Notebook</div>
+                            <div class="option">Slides</div>
+                        </div>
+                    </div>
+                    <textarea id="itemDescription" placeholder="Describe your item..." required></textarea>
+                </div>
+
+                <button type="submit" class="post-btn">Post Item</button>
             </form>
         </div>
-    </div>
+    </main>
 </div>
 
 <script>
-const libraryMenu = document.getElementById("libraryMenu");
-const dropdownMenu = document.getElementById("dropdownMenu");
-
-libraryMenu.addEventListener("click", function (e) {
-    e.stopPropagation();
-    dropdownMenu?.classList.toggle("show");
-});
-
-document.addEventListener("click", function () {
-    dropdownMenu?.classList.remove("show");
-});
-
 const wa = document.getElementById("wa");
 const mail = document.getElementById("mail");
 const input = document.getElementById("contactInput");
 
-wa.onclick = function () {
+wa.onclick = () => { 
+    wa.classList.add("active"); 
+    mail.classList.remove("active"); 
+    input.placeholder = "Enter your phone number"; 
+}
+
+mail.onclick = () => { 
+    mail.classList.add("active"); 
+    wa.classList.remove("active"); 
+    input.placeholder = "Enter your email"; 
+}
+
+const itemDropdown = document.getElementById("itemDropdown");
+const selectedItemBtn = document.getElementById("selectedItemBtn");
+const dropdownOptions = document.querySelectorAll(".dropdown-options .option");
+
+selectedItemBtn.onclick = () => {
+    itemDropdown.classList.toggle("open");
+}
+
+dropdownOptions.forEach(opt => {
+    opt.onclick = (e) => {
+        selectedItemBtn.innerText = e.target.innerText + " ▾";
+        itemDropdown.classList.remove("open");
+    }
+});
+
+document.getElementById("postForm").addEventListener("submit", function(e){
+    e.preventDefault();
+
+    let title = document.getElementById("title").value.trim();
+    let shortcut = document.getElementById("shortcut").value.trim().toUpperCase().replace(/\s+/g,'');
+    let priceInput = document.getElementById("price").value.trim();
+
+    let price = priceInput.toLowerCase() === "free" ? "Free" : priceInput;
+    if(price !== "Free" && isNaN(price)){
+        alert("Please enter a valid price or type 'Free'");
+        return;
+    }
+
+    let contact = input.value + (wa.classList.contains("active") ? " (WhatsApp)" : " (Email)");
+    let category = "Other";
+
+    if(shortcut.includes("CS")) category="CS";
+    else if(shortcut.includes("CIS")) category="CIS";
+    else if(shortcut.includes("CYS")) category="CYS";
+    else if(shortcut.includes("BIT")) category="BIT";
+    else if(shortcut.includes("DA")) category="DA";
+    else if(shortcut.includes("DRG")) category="DRG";
+    else if(shortcut.includes("MATH")) category="Math";
+    else if(shortcut.includes("PHYS")) category="Physics";
+    else if(shortcut.includes("STAT")) category="Stat";
+
+    const type = selectedItemBtn.innerText.replace(" ▾","");
+    const description = document.getElementById("itemDescription").value.trim();
+
+    const books = JSON.parse(localStorage.getItem("books")||"[]");
+    books.push({title, shortcut, price, contact, category, type, description, image:"book-placeholder.jpg"});
+    localStorage.setItem("books", JSON.stringify(books));
+
+    alert("Item Posted Successfully!");
+    this.reset();
     wa.classList.add("active");
     mail.classList.remove("active");
-    input.placeholder = "Enter your phone number";
-};
-
-mail.onclick = function () {
-    mail.classList.add("active");
-    wa.classList.remove("active");
-    input.placeholder = "Enter your email";
-};
+    selectedItemBtn.innerText = "Book ▾";
+});
 </script>
 
 </body>
