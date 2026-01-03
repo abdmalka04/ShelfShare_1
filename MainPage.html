@@ -1,82 +1,79 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>ShelfShare - Home</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="MainPage.css">
+<meta charset="UTF-8">
+<title>ShelfShare - Home</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="MainPage.css">
 </head>
 <body>
 
-<div class="top-bar">
+<header class="top-bar">
     <a href="MainPage.html" class="logo">ShelfShare</a>
-    <input type="text" class="search" placeholder="Search books...">
-    <div class="library-menu" id="libraryMenu">
-        <span class="menu-text">Library</span>
-        <img src="arrow.png" class="menu-arrow">
+
+    <div class="search-box">
+        <input type="text" class="search" placeholder="Search ex: CS 111">
+    </div>
+
+    <div class="menu-container">
+        <div class="library-menu" id="libraryMenu">
+            <span>Library</span>
+            <img src="arrow.png" class="menu-arrow">
+        </div>
+
         <div class="dropdown" id="dropdownMenu">
             <div class="dropdown-item">
-                IT
+                IT ▸
                 <div class="sub-dropdown">
-                    <a class="sub-item">CS</a>
-                    <a class="sub-item">CIS</a>
-                    <a class="sub-item">CYS</a>
-                    <a class="sub-item">DA</a>
-                    <a class="sub-item">DRG</a>
-                    <a class="sub-item">BIT</a>
+                    <a class="sub-item" onclick="filterBooks('CS')">CS</a>
+                    <a class="sub-item" onclick="filterBooks('CIS')">CIS</a>
+                    <a class="sub-item" onclick="filterBooks('CYS')">CYS</a>
+                    <a class="sub-item" onclick="filterBooks('DA')">DA</a>
+                    <a class="sub-item" onclick="filterBooks('DRG')">DRG</a>
+                    <a class="sub-item" onclick="filterBooks('BIT')">BIT</a>
                 </div>
             </div>
+
             <div class="dropdown-item">
-                Science
+                Science ▸
                 <div class="sub-dropdown">
-                    <a class="sub-item">Math</a>
-                    <a class="sub-item">Physics</a>
-                    <a class="sub-item">Stat</a>
+                    <a class="sub-item" onclick="filterBooks('Math')">Math</a>
+                    <a class="sub-item" onclick="filterBooks('Physics')">Physics</a>
+                    <a class="sub-item" onclick="filterBooks('Stat')">Stat</a>
                 </div>
             </div>
         </div>
+
+        <a href="Profile.html">
+            <img src="profile.png" class="profile-icon">
+        </a>
     </div>
-    <a href="Profile.html">
-        <img src="profile.png" class="profile-icon">
-    </a>
+</header>
+
+<div class="page-layout">
+    <div class="sidebar">
+        <p class="side-item">Wish List</p>
+        <a href="PostPage.html" class="side-item">Post</a>
+        <p class="side-item">Settings</p>
+    </div>
+
+    <div class="content" id="bookContainer"></div>
 </div>
 
-<div class="layout">
-    <div class="left-bar">
-        <div class="left-item">Wish List</div>
-        <a href="PostPage.html" class="left-item">Post</a>
-        <div class="left-item">Settings</div>
-    </div>
-
-    <div class="content">
-        <div class="book-card-single">
-            <img src="book1.jpg">
-            <h3 class="book-title">Linear Algebra</h3>
-            <p class="book-price">2 JOD</p>
-            <button class="book-btn">View Book</button>
-        </div>
-        <div class="book-card-single">
-            <img src="book2.jpg">
-            <h3 class="book-title">Database Systems</h3>
-            <p class="book-price">3 JOD</p>
-            <button class="book-btn">View Book</button>
-        </div>
-        <div class="book-card-single">
-            <img src="book3.jpg">
-            <h3 class="book-title">Physics 101</h3>
-            <p class="book-price">1.5 JOD</p>
-            <button class="book-btn">View Book</button>
-        </div>
-        <div class="book-card-single">
-            <img src="book4.jpg">
-            <h3 class="book-title">Statistics</h3>
-            <p class="book-price">2.5 JOD</p>
-            <button class="book-btn">View Book</button>
-        </div>
-        <div class="book-card-single">
-            <img src="book5.jpg">
-            <h3 class="book-title">CIS 260</h3>
-            <p class="book-price">3 JOD</p>
-            <button class="book-btn">View Book</button>
+<div class="modal" id="viewModal">
+    <div class="modal-content">
+        <span class="close" id="modalClose">&times;</span>
+        <div class="modal-card" id="modalCard">
+            <img id="modalImage">
+            <h3 id="modalTitle"></h3>
+            <p id="modalType"></p>
+            <p id="modalPrice"></p>
+            <p id="modalDescription"></p>
+            <p>
+                Contact: <a id="modalContactLink" target="_blank" class="contact-link"></a>
+            </p>
+            <button id="bookBtn">Book</button>
         </div>
     </div>
 </div>
@@ -85,15 +82,98 @@
 const libraryMenu = document.getElementById("libraryMenu");
 const dropdownMenu = document.getElementById("dropdownMenu");
 
-libraryMenu.addEventListener("click", function (e) {
+libraryMenu.addEventListener("click", (e) => {
     e.stopPropagation();
     dropdownMenu.classList.toggle("show");
 });
 
-document.addEventListener("click", function () {
-    dropdownMenu.classList.remove("show");
-});
-</script>
+document.addEventListener("click", () => dropdownMenu.classList.remove("show"));
 
+function loadBooks() {
+    const books = JSON.parse(localStorage.getItem("books") || "[]");
+    updateDisplay(books);
+}
+
+function filterBooks(category) {
+    const books = JSON.parse(localStorage.getItem("books") || "[]");
+    updateDisplay(books.filter(book => book.category === category));
+}
+
+const searchInput = document.querySelector(".search");
+searchInput.addEventListener("keydown", (e) => {
+    if(e.key === "Enter") {
+        e.preventDefault();
+        const query = searchInput.value.trim().toUpperCase().replace(/\s+/g,'');
+        const books = JSON.parse(localStorage.getItem("books") || "[]");
+        if(query === "") { updateDisplay(books); return; }
+        const filtered = books.filter(book =>
+            book.shortcut &&
+            book.shortcut.toUpperCase().replace(/\s+/g,'') === query
+        );
+        updateDisplay(filtered);
+    }
+});
+
+function updateDisplay(books) {
+    const container = document.getElementById("bookContainer");
+    container.innerHTML = "";
+    if(!books.length) {
+        container.innerHTML = "<p style='color:#555;font-size:18px;text-align:center;width:100%'>No books to display yet.</p>";
+        return;
+    }
+    books.forEach((book,index) => {
+        let shortDesc = book.description.length > 100 ? book.description.substring(0,100) + "..." : book.description;
+        container.innerHTML += `
+        <div class="book-card">
+            <h3>${book.title} - ${book.type}</h3>
+            <p class="book-desc">${shortDesc}</p>
+            <div class="card-bottom">
+                <span class="price">${book.price} JOD</span>
+                <button onclick="viewBook(${index})">View Item</button>
+            </div>
+        </div>`;
+    });
+}
+
+const modal = document.getElementById("viewModal");
+const modalClose = document.getElementById("modalClose");
+const modalTitle = document.getElementById("modalTitle");
+const modalType = document.getElementById("modalType");
+const modalPrice = document.getElementById("modalPrice");
+const modalDescription = document.getElementById("modalDescription");
+const modalImage = document.getElementById("modalImage");
+const modalContactLink = document.getElementById("modalContactLink");
+const bookBtn = document.getElementById("bookBtn");
+
+function viewBook(index) {
+    const books = JSON.parse(localStorage.getItem("books") || "[]");
+    const book = books[index];
+    modalTitle.innerText = book.title;
+    modalType.innerText = "Type: " + book.type;
+    modalPrice.innerText = "Price: " + book.price + " JOD";
+    modalDescription.innerText = "Description: " + book.description;
+    modalImage.src = book.image;
+    if(book.contact.includes("WhatsApp")) {
+        const number = book.contact.split(" ")[0];
+        modalContactLink.href = `https://wa.me/${number.replace(/\D/g,'')}`;
+        modalContactLink.innerText = book.contact;
+    } else {
+        modalContactLink.href = `mailto:${book.contact.split(" ")[0]}`;
+        modalContactLink.innerText = book.contact;
+    }
+    bookBtn.classList.remove("booked");
+    bookBtn.innerHTML = 'Book';
+    modal.style.display = "flex";
+    bookBtn.onclick = () => {
+        bookBtn.classList.toggle("booked");
+        bookBtn.innerHTML = bookBtn.classList.contains("booked") ? 'Booked' : 'Book';
+    };
+}
+
+modalClose.onclick = () => modal.style.display = "none";
+window.onclick = (e) => { if(e.target === modal) modal.style.display = "none"; }
+
+window.onload = loadBooks;
+</script>
 </body>
 </html>
