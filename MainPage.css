@@ -5,7 +5,32 @@ body {
     color: #222;
     scroll-behavior: smooth;
 }
+.dropdown-sidebar {
+    position: relative;
+    cursor: pointer;
+}
 
+.sub-sidebar-dropdown {
+    display: none;
+    flex-direction: column;
+    padding-left: 10px;
+    margin-top: 5px;
+}
+
+.sub-sidebar-dropdown a {
+    padding: 5px 0;
+    text-decoration: none;
+    color: #333;
+    font-size: 14px;
+}
+
+.sub-sidebar-dropdown a:hover {
+    color: #007BFF;
+}
+
+.dropdown-sidebar.active .sub-sidebar-dropdown {
+    display: flex;
+}
 .top-bar {
     background: #2E8B57;
     color: white;
