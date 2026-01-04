@@ -54,7 +54,15 @@
 <div class="page-layout">
     <div class="sidebar">
         <p class="side-item">Wish List</p>
-        <a href="PostPage.html" class="side-item">Post</a>
+
+        <div class="side-item dropdown-sidebar" id="postDropdown">
+            Post ▸
+            <div class="sub-sidebar-dropdown">
+                <a href="PostPage.html" class="sub-item">New Post</a>
+                <a href="MyPosts.html" class="sub-item">My Posts</a>
+            </div>
+        </div>
+
         <p class="side-item">Settings</p>
     </div>
 
@@ -63,7 +71,7 @@
 
 <div class="modal" id="viewModal">
     <div class="modal-content">
-        <span class="close" id="modalClose">&times;</span>
+        <span class="close" id="modalClose">X</span>
         <div class="modal-card" id="modalCard">
             <img id="modalImage">
             <h3 id="modalTitle"></h3>
@@ -172,6 +180,16 @@ function viewBook(index) {
 
 modalClose.onclick = () => modal.style.display = "none";
 window.onclick = (e) => { if(e.target === modal) modal.style.display = "none"; }
+
+const postDropdown = document.getElementById("postDropdown");
+postDropdown.addEventListener("click", (e) => {
+    e.stopPropagation();
+    postDropdown.classList.toggle("active");
+});
+
+document.addEventListener("click", () => {
+    postDropdown.classList.remove("active");
+});
 
 window.onload = loadBooks;
 </script>
