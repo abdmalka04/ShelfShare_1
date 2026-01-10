@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>ShelfShare - Wish List</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="MainPage.css">
+</head>
+
+<body>
+
+<header class="top-bar">
+    <a href="MainPage.html" class="logo">ShelfShare</a>
+
+    <div class="search-box">
+        <input type="text" class="search" placeholder="Search ex: CS 111">
+    </div>
+
+    <div class="menu-container">
+        <div class="library-menu" id="libraryMenu">
+            <span>Library</span>
+            <img src="arrow.png" class="menu-arrow">
+        </div>
+
+        <div class="dropdown" id="dropdownMenu">
+            <div class="dropdown-item">
+                IT ▸
+                <div class="sub-dropdown">
+                    <a class="sub-item">CS</a>
+                    <a class="sub-item">CIS</a>
+                    <a class="sub-item">CYS</a>
+                    <a class="sub-item">DA</a>
+                    <a class="sub-item">DRG</a>
+                    <a class="sub-item">BIT</a>
+                </div>
+            </div>
+            <div class="dropdown-item">
+                Science ▸
+                <div class="sub-dropdown">
+                    <a class="sub-item">Math</a>
+                    <a class="sub-item">Physics</a>
+                    <a class="sub-item">Stat</a>
+                </div>
+            </div>
+        </div>
+
+        <a href="Profile.html">
+            <img src="profile.png" class="profile-icon">
+        </a>
+    </div>
+</header>
+
+<div class="page-layout">
+
+<div class="sidebar">
+    <p class="side-item" style="background:#e9f5ef">Wish List</p>
+
+    <div class="side-item dropdown-sidebar" id="postDropdown">
+        Post ▸
+        <div class="sub-sidebar-dropdown">
+            <a href="#" class="sub-item">New Post</a>
+            <a href="MyPosts.html" class="sub-item">My Posts</a>
+        </div>
+    </div>
+
+    <p class="side-item">Settings</p>
+</div>
+
+<div class="content" id="wishlistContainer"></div>
+</div>
+
+<div class="modal" id="viewModal">
+    <div class="modal-content">
+        <span class="close" id="modalClose">X</span>
+
+        <div class="modal-card">
+            <img id="modalImage">
+            <h3 id="modalTitle"></h3>
+            <p id="modalType"></p>
+            <p id="modalPrice"></p>
+            <p id="modalDescription"></p>
+            <p>
+                Contact:
+                <a id="modalContactLink" target="_blank" class="contact-link"></a>
+            </p>
+
+            <button id="bookBtn">Book</button>
+        </div>
+    </div>
+</div>
+
+<script>
+let currentIndex = null;
+
+const libraryMenu = document.getElementById("libraryMenu");
+const dropdownMenu = document.getElementById("dropdownMenu");
+
+libraryMenu.onclick = e => {
+    e.stopPropagation();
+    dropdownMenu.classList.toggle("show");
+};
+document.addEventListener("click", () => dropdownMenu.classList.remove("show"));
+
+const postDropdown = document.getElementById("postDropdown");
+postDropdown.onclick = e => {
+    e.stopPropagation();
+    postDropdown.classList.toggle("active");
+};
+document.addEventListener("click", () => postDropdown.classList.remove("active"));
+
+function loadWishList() {
+    const container = document.getElementById("wishlistContainer");
+    const books = JSON.parse(localStorage.getItem("books") || "[]");
+
+    const savedBooks = books.filter(b => b.saved && b.status === "available");
+
+    container.innerHTML = "";
+
+    if (!savedBooks.length) {
+        container.innerHTML = `
+            <p style="text-align:center;font-size:18px;color:#555;width:100%">
+                Your wishlist is empty.
+            </p>`;
+        return;
+    }
+
+    savedBooks.forEach(book => {
+        const index = books.indexOf(book);
+        const shortDesc = book.description.length > 100
+            ? book.description.substring(0,100) + "..."
+            : book.description;
+
+        container.innerHTML += `
+        <div class="book-card">
+            <div class="saved-badge">Saved</div>
+            <h3>${book.title}</h3>
+            <p class="book-desc">${shortDesc}</p>
+
+            <div class="card-bottom">
+                <button onclick="viewItem(${index})">View Item</button>
+                <button onclick="removeItem(${index})"
+                        style="background:linear-gradient(135deg,#EF476F,#D62828)">
+                    Remove
+                </button>
+            </div>
+        </div>`;
+    });
+}
+
+function viewItem(index) {
+    const books = JSON.parse(localStorage.getItem("books") || "[]");
+    const book = books[index];
+    currentIndex = index;
+
+    modalTitle.innerText = book.title;
+    modalType.innerText = "Type: " + (book.type || book.visibility);
+    modalPrice.innerText = "Price: " + book.price + " JOD";
+    modalDescription.innerText = "Description: " + book.description;
+    modalImage.src = book.image || "placeholder.png";
+
+    if (book.contact.includes("WhatsApp")) {
+        const number = book.contact.split(" ")[0];
+        modalContactLink.href = `https://wa.me/${number.replace(/\D/g,'')}`;
+        modalContactLink.innerText = book.contact;
+    } else {
+        modalContactLink.href = `mailto:${book.contact.split(" ")[0]}`;
+        modalContactLink.innerText = book.contact;
+    }
+
+    bookBtn.onclick = () => {
+        if (book.status !== "booked") {
+            book.status = "booked";
+            book.bookedAt = Date.now();
+            localStorage.setItem("books", JSON.stringify(books));
+            modal.style.display = "none";
+            loadWishList();
+        }
+    };
+
+    modal.style.display = "flex";
+}
+
+function removeItem(index) {
+    const books = JSON.parse(localStorage.getItem("books") || "[]");
+    books[index].saved = false;
+    localStorage.setItem("books", JSON.stringify(books));
+    loadWishList();
+}
+
+const modal = document.getElementById("viewModal");
+const modalClose = document.getElementById("modalClose");
+modalClose.onclick = () => modal.style.display = "none";
+window.onclick = e => { if (e.target === modal) modal.style.display = "none"; };
+
+window.onload = loadWishList;
+</script>
+
+</body>
+</html>

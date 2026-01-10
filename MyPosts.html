@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>ShelfShare - My Posts</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="MainPage.css">
+</head>
+
+<body>
+
+<header class="top-bar">
+    <a href="MainPage.html" class="logo">ShelfShare</a>
+
+    <div class="menu-container">
+        <a href="Profile.html">
+            <img src="profile.png" class="profile-icon">
+        </a>
+    </div>
+</header>
+
+<div class="page-layout">
+
+    <div class="sidebar">
+        <a href="WishList.html" class="side-item">Wish List</a>
+
+        <div class="side-item dropdown-sidebar active">
+            Post ▸
+            <div class="sub-sidebar-dropdown">
+                <a href="MainPage.html" class="sub-item">New Post</a>
+                <a href="MyPosts.html" class="sub-item">My Posts</a>
+            </div>
+        </div>
+
+        <p class="side-item">Settings</p>
+    </div>
+
+    <div class="content" id="myPostsContainer"></div>
+
+</div>
+
+<div class="modal" id="viewModal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">X</span>
+
+        <div class="modal-card">
+            <h3 id="modalTitle"></h3>
+            <p id="modalType"></p>
+            <p id="modalPrice"></p>
+            <p id="modalDescription"></p>
+        </div>
+    </div>
+</div>
+
+<script>
+const currentUser = "User1"; 
+const container = document.getElementById("myPostsContainer");
+
+function loadMyPosts() {
+    const books = JSON.parse(localStorage.getItem("books") || "[]");
+    const myBooks = books.filter(b => b.postedBy === currentUser);
+
+    container.innerHTML = "";
+
+    if (!myBooks.length) {
+        container.innerHTML = "<p style='color:#555;font-size:18px;text-align:center;width:100%'>You haven't posted anything yet.</p>";
+        return;
+    }
+
+    myBooks.forEach((book, index) => {
+        const realIndex = books.indexOf(book);
+
+        let actionButtons = `
+            <button onclick="viewPost(${realIndex})">View Item</button>
+            <button onclick="removePost(${realIndex})" style="background:#ff4d4d;color:#fff;">Delete</button>
+        `;
+
+        if(book.status === "booked" && !book.dealMade) {
+            actionButtons += `<button onclick="retrievePost(${realIndex})" style="background:#4CAF50;color:#fff;">Retrieve Post</button>`;
+        }
+
+        container.innerHTML += `
+        <div class="book-card">
+            ${book.status === "booked" ? '<div class="saved-badge">Booked</div>' : ''}
+            <h3>${book.title}</h3>
+            <p class="book-desc">${book.description.length > 100 ? book.description.substring(0,100) + "..." : book.description}</p>
+            <div class="card-bottom">
+                <span class="price">${book.price} JOD</span>
+                <div style="display:flex; gap:10px;">
+                    ${actionButtons}
+                </div>
+            </div>
+        </div>
+        `;
+    });
+}
+
+function removePost(index) {
+    if (!confirm("Are you sure you want to delete this post?")) return;
+
+    const books = JSON.parse(localStorage.getItem("books") || "[]");
+    books.splice(index, 1);
+    localStorage.setItem("books", JSON.stringify(books));
+
+    loadMyPosts();
+}
+
+function retrievePost(index) {
+    const books = JSON.parse(localStorage.getItem("books") || "[]");
+    const book = books[index];
+
+    if(book.status === "booked" && !book.dealMade) {
+        book.status = "available";
+        book.bookedBy = null; 
+        localStorage.setItem("books", JSON.stringify(books));
+        alert("Post retrieved and available again!");
+        loadMyPosts();
+    }
+}
+
+function viewPost(index) {
+    const books = JSON.parse(localStorage.getItem("books") || "[]");
+    const book = books[index];
+
+    document.getElementById("modalTitle").innerText = book.title;
+    document.getElementById("modalType").innerText = "Type: " + (book.type || book.visibility);
+    document.getElementById("modalPrice").innerText = "Price: " + book.price + " JOD";
+    document.getElementById("modalDescription").innerText = book.description;
+
+    document.getElementById("viewModal").style.display = "flex";
+}
+
+function closeModal() {
+    document.getElementById("viewModal").style.display = "none";
+}
+
+window.onload = loadMyPosts;
+</script>
+
+
+</body>
+</html>
