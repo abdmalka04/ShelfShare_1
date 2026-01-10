@@ -6,66 +6,80 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="MainPage.css">
+<style>
+#contactRow {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+#contactRow button {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    padding: 5px 10px;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #fff;
+}
+
+#contactRow button img {
+    width: 24px;
+    margin-right: 5px;
+}
+
+#contactRow input {
+    flex: 1 1 auto;
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+</style>
 </head>
 <body>
 
 <header class="top-bar">
-    <a href="MainPage.html" class="logo">ShelfShare</a>
-
+    <a href="#" class="logo">ShelfShare</a>
     <div class="search-box">
         <input type="text" class="search" placeholder="Search ex: CS 111">
     </div>
-
     <div class="menu-container">
         <div class="library-menu" id="libraryMenu">
             <span>Library</span>
             <img src="arrow.png" class="menu-arrow">
         </div>
-
         <div class="dropdown" id="dropdownMenu">
-            <div class="dropdown-item">
-                IT ▸
-                <div class="sub-dropdown">
-                    <a class="sub-item" onclick="filterBooks('CS')">CS</a>
-                    <a class="sub-item" onclick="filterBooks('CIS')">CIS</a>
-                    <a class="sub-item" onclick="filterBooks('CYS')">CYS</a>
-                    <a class="sub-item" onclick="filterBooks('DA')">DA</a>
-                    <a class="sub-item" onclick="filterBooks('DRG')">DRG</a>
-                    <a class="sub-item" onclick="filterBooks('BIT')">BIT</a>
-                </div>
-            </div>
-
-            <div class="dropdown-item">
-                Science ▸
-                <div class="sub-dropdown">
-                    <a class="sub-item" onclick="filterBooks('Math')">Math</a>
-                    <a class="sub-item" onclick="filterBooks('Physics')">Physics</a>
-                    <a class="sub-item" onclick="filterBooks('Stat')">Stat</a>
-                </div>
+           <div class="dropdown-item" onclick="filterByVisibility('academic')">Academic</div>
+           <div class="dropdown-item" onclick="filterByVisibility('general')">General</div>
+        </div>
+    </div>
+    <div class="profile-wrapper" id="profileWrapper">
+        <img src="profile.png" class="profile-icon" id="profileIcon">
+        <div class="profile-dropdown" id="profileDropdown">
+            <p class="profile-name" id="profileUsername"></p>
+            <p class="profile-email" id="profileEmail"></p>
+            <div class="profile-stats">
+                <span>📚 Posts: <b id="postCount">0</b></span>
+                <span>❤️ Wishlist: <b id="wishlistCount">0</b></span>
             </div>
         </div>
-
-        <a href="Profile.html">
-            <img src="profile.png" class="profile-icon">
-        </a>
     </div>
 </header>
 
 <div class="page-layout">
     <div class="sidebar">
-        <p class="side-item">Wish List</p>
-
+        <a href="WishList.html" class="side-item">Wish List</a>
         <div class="side-item dropdown-sidebar" id="postDropdown">
             Post ▸
             <div class="sub-sidebar-dropdown">
-                <a href="PostPage.html" class="sub-item">New Post</a>
+                <a href="#" class="sub-item" id="openPostModal">New Post</a>
                 <a href="MyPosts.html" class="sub-item">My Posts</a>
             </div>
         </div>
-
         <p class="side-item">Settings</p>
     </div>
-
     <div class="content" id="bookContainer"></div>
 </div>
 
@@ -75,37 +89,128 @@
         <div class="modal-card" id="modalCard">
             <img id="modalImage">
             <h3 id="modalTitle"></h3>
-            <p id="modalType"></p>
-            <p id="modalPrice"></p>
-            <p id="modalDescription"></p>
-            <p>
-                Contact: <a id="modalContactLink" target="_blank" class="contact-link"></a>
-            </p>
-            <button id="bookBtn">Book</button>
+            <p><span class="modal-label">Type:</span> <span class="modal-value" id="modalType"></span></p>
+            <p><span class="modal-label">Price:</span> <span class="modal-value" id="modalPrice"></span></p>
+            <p><span class="modal-label">Description:</span> <span class="modal-value" id="modalDescription"></span></p>
+            <p><span class="modal-label">Contact:</span> <a id="modalContactLink" class="modal-contact" target="_blank"></a></p>
+            <div class="modal-card-buttons">
+                <button id="saveBtn" class="save-btn">
+                    <img src="save.png" class="save-icon" alt="Save">
+                </button>
+                <button id="bookBtn" class="book-btn">
+                    <img src="tick.png" class="book-tick" alt="Booked">
+                    <span>Book</span>
+                </button>
+            </div>
         </div>
     </div>
 </div>
 
+<div class="modal" id="postModal">
+    <div class="modal-content post-modal-content post-card">
+        <span class="close" id="postModalClose">&times;</span>
+        <h2 class="post-title">Post an Item</h2>
+        <form id="postForm">
+            <div class="book-category">
+                <span>Your book is:</span>
+                <select id="postCategory">
+                    <option value="academic" selected>Academic</option>
+                    <option value="general">General</option>
+                </select>
+            </div>
+
+            <label>Item Title</label>
+            <div class="two-inputs">
+                <input type="text" id="postTitle" placeholder="" required>
+                <input type="text" id="postShortcut" placeholder="ex. CIS 260" class="uni-field">
+                <label class="general-field">Genre</label>
+                <select id="postGenre" class="general-field">
+                    <option value="">Select genre</option>
+                    <option>Novel</option>
+                    <option>Fiction</option>
+                    <option>Non-Fiction</option>
+                    <option>Fantasy</option>
+                    <option>Science Fiction</option>
+                    <option>Romance</option>
+                    <option>Mystery</option>
+                    <option>Thriller</option>
+                    <option>Biography</option>
+                    <option>History</option>
+                    <option>Self-Help</option>
+                    <option>Psychology</option>
+                    <option>Business</option>
+                    <option>Philosophy</option>
+                    <option>Religion</option>
+                    <option>Poetry</option>
+                    <option>Children</option>
+                    <option>Other</option>
+                </select>
+            </div>
+
+            <div class="general-field">
+                <label>Author</label>
+                <input type="text" id="postAuthor" placeholder="ex. George Orwell">
+            </div>
+
+            <label>Price (JOD)</label>
+            <input type="text" id="postPrice" placeholder="ex. 2 or type 'Free'" required>
+
+            <div class="uni-type-section">
+                <label>Description</label>
+                <textarea id="uniItemDescription" placeholder="Describe your item..." required></textarea>
+            </div>
+
+            <label>Contact Method</label>
+            <div class="contact-row">
+                <button type="button" class="contact-btn active" id="whatsappBtn">
+                    <img src="whatsapp1.png">
+                </button>
+                <button type="button" class="contact-btn" id="gmailBtn">
+                    <img src="email.png">
+                </button>
+                <input type="text" id="postContact" placeholder="Enter your phone number" required>
+            </div>
+
+            <button class="post-submit" type="submit">Post Item</button>
+        </form>
+    </div>
+</div>
+
 <script>
+const profileIcon = document.getElementById("profileIcon");
+const profileDropdown = document.getElementById("profileDropdown");
+const profileUsername = document.getElementById("profileUsername");
+const profileEmail = document.getElementById("profileEmail");
+const postCountEl = document.getElementById("postCount");
+const wishlistCountEl = document.getElementById("wishlistCount");
+
+const currentUser = { username: "User1", email: "user1@email.com" };
+
+profileIcon.addEventListener("click", (e) => {
+    e.stopPropagation();
+    updateProfileInfo();
+    profileDropdown.style.display = profileDropdown.style.display === "block" ? "none" : "block";
+});
+document.addEventListener("click", () => { profileDropdown.style.display = "none"; });
+
+function updateProfileInfo() {
+    const books = JSON.parse(localStorage.getItem("books") || "[]");
+    profileUsername.innerText = currentUser.username;
+    profileEmail.innerText = currentUser.email;
+    postCountEl.innerText = books.filter(b => b.postedBy === currentUser.username).length;
+    wishlistCountEl.innerText = books.filter(b => b.saved).length;
+}
+
+function filterByVisibility(type) {
+    const books = JSON.parse(localStorage.getItem("books") || "[]");
+    updateDisplay(books.filter(book => book.visibility === type && book.status === "available"));
+}
+
+let currentModalIndex = null;
 const libraryMenu = document.getElementById("libraryMenu");
 const dropdownMenu = document.getElementById("dropdownMenu");
-
-libraryMenu.addEventListener("click", (e) => {
-    e.stopPropagation();
-    dropdownMenu.classList.toggle("show");
-});
-
+libraryMenu.addEventListener("click", (e) => { e.stopPropagation(); dropdownMenu.classList.toggle("show"); });
 document.addEventListener("click", () => dropdownMenu.classList.remove("show"));
-
-function loadBooks() {
-    const books = JSON.parse(localStorage.getItem("books") || "[]");
-    updateDisplay(books);
-}
-
-function filterBooks(category) {
-    const books = JSON.parse(localStorage.getItem("books") || "[]");
-    updateDisplay(books.filter(book => book.category === category));
-}
 
 const searchInput = document.querySelector(".search");
 searchInput.addEventListener("keydown", (e) => {
@@ -114,26 +219,23 @@ searchInput.addEventListener("keydown", (e) => {
         const query = searchInput.value.trim().toUpperCase().replace(/\s+/g,'');
         const books = JSON.parse(localStorage.getItem("books") || "[]");
         if(query === "") { updateDisplay(books); return; }
-        const filtered = books.filter(book =>
-            book.shortcut &&
-            book.shortcut.toUpperCase().replace(/\s+/g,'') === query
-        );
-        updateDisplay(filtered);
+        updateDisplay(books.filter(book => book.shortcut && book.shortcut.toUpperCase().replace(/\s+/g,'') === query));
     }
 });
 
 function updateDisplay(books) {
     const container = document.getElementById("bookContainer");
     container.innerHTML = "";
-    if(!books.length) {
-        container.innerHTML = "<p style='color:#555;font-size:18px;text-align:center;width:100%'>No books to display yet.</p>";
-        return;
-    }
-    books.forEach((book,index) => {
-        let shortDesc = book.description.length > 100 ? book.description.substring(0,100) + "..." : book.description;
+    const visibleBooks = books.filter(book => book.status === "available");
+    if(!visibleBooks.length) { container.innerHTML = "<p style='color:#555;font-size:18px;text-align:center;width:100%'>No books to display yet.</p>"; return; }
+
+    visibleBooks.forEach((book) => {
+        const index = books.indexOf(book);
+        let shortDesc = book.description?.length > 100 ? book.description.substring(0,100) + "..." : book.description || "";
         container.innerHTML += `
         <div class="book-card">
-            <h3>${book.title} - ${book.type}</h3>
+            ${book.saved ? '<div class="saved-badge">Saved</div>' : ''}
+            <h3>${book.title} - ${book.type || book.visibility}</h3>
             <p class="book-desc">${shortDesc}</p>
             <div class="card-bottom">
                 <span class="price">${book.price} JOD</span>
@@ -152,46 +254,154 @@ const modalDescription = document.getElementById("modalDescription");
 const modalImage = document.getElementById("modalImage");
 const modalContactLink = document.getElementById("modalContactLink");
 const bookBtn = document.getElementById("bookBtn");
+const saveBtn = document.getElementById("saveBtn");
+
+saveBtn.onclick = () => {
+    if(currentModalIndex === null) return;
+    const books = JSON.parse(localStorage.getItem("books") || "[]");
+    const book = books[currentModalIndex];
+    book.saved = !book.saved;
+    localStorage.setItem("books", JSON.stringify(books));
+    saveBtn.classList.toggle("saved");
+    saveBtn.innerText = saveBtn.classList.contains("saved") ? "Saved" : "Save";
+    updateDisplay(books);
+};
 
 function viewBook(index) {
+    currentModalIndex = index;
     const books = JSON.parse(localStorage.getItem("books") || "[]");
     const book = books[index];
+
     modalTitle.innerText = book.title;
-    modalType.innerText = "Type: " + book.type;
-    modalPrice.innerText = "Price: " + book.price + " JOD";
-    modalDescription.innerText = "Description: " + book.description;
-    modalImage.src = book.image;
-    if(book.contact.includes("WhatsApp")) {
-        const number = book.contact.split(" ")[0];
-        modalContactLink.href = `https://wa.me/${number.replace(/\D/g,'')}`;
-        modalContactLink.innerText = book.contact;
+    modalType.innerText = book.type || book.visibility;
+    modalPrice.innerText = book.price + " JOD";
+    modalDescription.innerText = book.description || "";
+    modalImage.src = book.image || "placeholder.png";
+
+    if(book.contact?.includes("WhatsApp")) {
+        modalContactLink.href = `https://wa.me/${book.contact.replace(/\D/g,'')}`;
     } else {
         modalContactLink.href = `mailto:${book.contact.split(" ")[0]}`;
-        modalContactLink.innerText = book.contact;
     }
+    modalContactLink.innerText = book.contact;
+
     bookBtn.classList.remove("booked");
-    bookBtn.innerHTML = 'Book';
+    bookBtn.innerHTML = '<img src="tick.png" class="book-tick" alt="Booked"><span>Book</span>';
     modal.style.display = "flex";
+
+    if(book.saved) { saveBtn.classList.add("saved"); saveBtn.innerText = "Saved"; }
+    else { saveBtn.classList.remove("saved"); saveBtn.innerText = "Save"; }
+
     bookBtn.onclick = () => {
-        bookBtn.classList.toggle("booked");
-        bookBtn.innerHTML = bookBtn.classList.contains("booked") ? 'Booked' : 'Book';
+        if(book.status === "booked") return;
+        book.status = "booked";
+        book.bookedBy = currentUser.username;
+        book.dealMade = false;
+        book.bookedAt = Date.now();
+        localStorage.setItem("books", JSON.stringify(books));
+        bookBtn.classList.add("booked");
+        bookBtn.querySelector("span").innerText = "Booked";
+        updateDisplay(books);
     };
+
+    if(book.status === "booked") { bookBtn.classList.add("booked"); bookBtn.querySelector("span").innerText = "Booked"; }
+    else { bookBtn.classList.remove("booked"); bookBtn.querySelector("span").innerText = "Book"; }
 }
 
-modalClose.onclick = () => modal.style.display = "none";
-window.onclick = (e) => { if(e.target === modal) modal.style.display = "none"; }
+modalClose.onclick = () => { modal.style.display = "none"; updateDisplay(JSON.parse(localStorage.getItem("books") || "[]")); };
+window.onclick = (e) => { if(e.target===modal) { modal.style.display = "none"; updateDisplay(JSON.parse(localStorage.getItem("books") || "[]")); } };
+
+const postModal = document.getElementById("postModal");
+const postModalClose = document.getElementById("postModalClose");
+const openPostModal = document.getElementById("openPostModal");
+const postForm = document.getElementById("postForm");
+const postCategory = document.getElementById("postCategory");
+const uniFields = document.querySelectorAll(".uni-field");
+const generalFields = document.querySelectorAll(".general-field");
+
+function updateFormFields() {
+    if(postCategory.value==="general"){
+        uniFields.forEach(f=>f.style.display="none");
+        document.querySelector(".uni-type-section").style.display="none";
+        generalFields.forEach(f=>f.style.display="block");
+    } else {
+        uniFields.forEach(f=>f.style.display="block");
+        document.querySelector(".uni-type-section").style.display="block";
+        generalFields.forEach(f=>f.style.display="none");
+    }
+}
+
+postCategory.addEventListener("change", updateFormFields);
+updateFormFields();
+openPostModal.onclick = (e) => { e.preventDefault(); postModal.style.display="flex"; };
+postModalClose.onclick = () => postModal.style.display="none";
+window.onclick = (e) => { if(e.target===postModal) postModal.style.display="none"; };
+
+const whatsappBtn = document.getElementById("whatsappBtn");
+const gmailBtn = document.getElementById("gmailBtn");
+const postContactInput = document.getElementById("postContact");
+
+whatsappBtn.addEventListener("click", ()=>{
+    postContactInput.placeholder="Enter your phone number";
+    postContactInput.focus();
+    postContactInput.dataset.contactType="WhatsApp";
+    whatsappBtn.style.backgroundColor="#25D366";
+    gmailBtn.style.backgroundColor="";
+});
+gmailBtn.addEventListener("click", ()=>{
+    postContactInput.placeholder="Enter your email";
+    postContactInput.focus();
+    postContactInput.dataset.contactType="Gmail";
+    gmailBtn.style.backgroundColor="#D14836";
+    whatsappBtn.style.backgroundColor="";
+});
+
+
+postForm.addEventListener("submit", (e)=>{
+    e.preventDefault();
+
+    const books = JSON.parse(localStorage.getItem("books") || "[]");
+    const contactType = postContactInput.dataset.contactType || "WhatsApp";
+
+    const newBook = {
+        visibility: postCategory.value,
+        title: postTitle.value,
+        shortcut: postCategory.value === "academic" ? postShortcut.value : null,
+        genre: postCategory.value === "general" ? postGenre.value : null,
+        author: postCategory.value === "general" ? postAuthor.value : null,
+        description: postCategory.value === "academic"
+            ? document.getElementById("uniItemDescription").value
+            : `Author: ${postAuthor.value || "Unknown"} | Genre: ${postGenre.value || "Other"}`,
+        price: postPrice.value,
+        contact: `${postContactInput.value} (${contactType})`,
+        postedBy: currentUser.username,
+        status: "available",
+        bookedAt: null,
+        saved: false 
+    };
+
+    books.push(newBook);
+    localStorage.setItem("books", JSON.stringify(books));
+
+    updateDisplay(books);
+
+    postModal.style.display = "none";
+    postForm.reset();
+
+    postContactInput.placeholder = "Enter your contact info";
+    whatsappBtn.style.backgroundColor = "";
+    gmailBtn.style.backgroundColor = "";
+
+    updateFormFields();
+});
+
 
 const postDropdown = document.getElementById("postDropdown");
-postDropdown.addEventListener("click", (e) => {
-    e.stopPropagation();
-    postDropdown.classList.toggle("active");
-});
+postDropdown.addEventListener("click",(e)=>{ e.stopPropagation(); postDropdown.classList.toggle("active"); });
+document.addEventListener("click",()=>{ postDropdown.classList.remove("active"); });
 
-document.addEventListener("click", () => {
-    postDropdown.classList.remove("active");
-});
-
-window.onload = loadBooks;
+window.onload = ()=>{ updateDisplay(JSON.parse(localStorage.getItem("books") || "[]")); };
+window.addEventListener("focus",()=>{ updateDisplay(JSON.parse(localStorage.getItem("books") || "[]")); });
 </script>
 </body>
 </html>
